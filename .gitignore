@@ -1,0 +1,11 @@
+.idea/
+media/
+venv/
+reload
+log
+.env
+.vscode
+
+*.py[cod]
+**__pycache__**
+test.py
