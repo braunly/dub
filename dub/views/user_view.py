@@ -1,9 +1,9 @@
+import bcrypt
 import os
 import uuid 
 
 from flask_restful import Resource, reqparse
-from mongoengine import Q 
-
+from mongoengine import Q
 from dub.models import User
 
 
@@ -11,16 +11,27 @@ class UserCreateResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("login", type=str, required=True, default=None)
-        parser.add_argument("password", type=str, required=True, default=None)
+        parser.add_argument("login", type=str, required=True)
+        parser.add_argument("password", type=str, required=True)
         args = parser.parse_args()
 
-        # FIXME: дописати вранці
-        user = User(
-            uuid=str(uuid.uuid4()),
-            login=args['login'],
-            password=args['password']
-        ).save()
+        encrypted_password = bcrypt.hashpw(
+            args['password'].encode('utf8'), 
+            bcrypt.gensalt()
+        )
+
+        if User.objects(login__iexact=args['login']).first():
+            return {"error": "Already exist"}, 409
+        
+        try:
+            user = User(
+                uuid=str(uuid.uuid4()),
+                login=args['login'],
+                password=encrypted_password
+            ).save()
+        except Exception as exc:
+            print(exc)
+            return {"error": "Server error!"}, 500
 
         # Create textures folder
         os.mkdir(f'media/{user.uuid}')
@@ -32,23 +43,20 @@ class UserGetResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("uuid", type=str, default=None)
-        parser.add_argument("login", type=str, default=None)
-        parser.add_argument("email", type=str, default=None)
-        parser.add_argument("access", type=str, default=None)
-        parser.add_argument("client", type=str, default=None)
-        parser.add_argument("server", type=str, default=None)
+        parser.add_argument("uuid", type=str, store_missing=False)
+        parser.add_argument("login", type=str, store_missing=False)
+        parser.add_argument("email", type=str, store_missing=False)
+        parser.add_argument("access", type=str, store_missing=False)
+        parser.add_argument("client", type=str, store_missing=False)
+        parser.add_argument("server", type=str, store_missing=False)
         args = parser.parse_args()
 
-        print(args)
+        query_set = User.objects.none()
 
-        user = User.objects(
-            Q(uuid=args['uuid']) |
-            Q(login=args['login']) |
-            Q(email=args['email']) |
-            Q(access=args['access']) |
-            Q(client=args['client'])
-        ).exclude("password").no_cache().first()
+        for key in args:
+            query_set = User.objects(Q(**{f"{key}__iexact": args[key]}) | query_set._query_obj)
+
+        user = query_set.exclude("password").no_cache().first()
 
         if user:
             resp = user.to_player_dict()
@@ -62,17 +70,15 @@ class UserCheckPasswordResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("uuid", type=str, required=True, default=None)
-        parser.add_argument("password", type=str, required=True, default=None)
+        parser.add_argument("uuid", type=str, required=True)
+        parser.add_argument("password", type=str, required=True)
         args = parser.parse_args()
 
-        print(args)
+        user = User.objects(uuid=args['uuid']).first()
+        if user and bcrypt.checkpw(args['password'].encode('utf8'), user.password):
+            return {"status": True}, 200
 
-        user = User.objects(uuid=args['uuid'], password=args['password']).first()
-
-        print(user)
-
-        return {"status": bool(user)}
+        return {"status": False}, 401
         
 
 class UserSaveResource(Resource):
@@ -80,16 +86,32 @@ class UserSaveResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("uuid", type=str, required=True, default=None)
-        parser.add_argument("access", type=str, required=True, default=None)
-        parser.add_argument("client", type=str, required=True, default=None)
-        parser.add_argument("server", type=str, required=True, default=None)
+        parser.add_argument("uuid", type=str, required=True)
+        parser.add_argument("login", type=str, store_missing=False)
+        parser.add_argument("access", type=str, store_missing=False)
+        parser.add_argument("client", type=str, store_missing=False)
+        parser.add_argument("server", type=str, store_missing=False)
         args = parser.parse_args()
 
         user = User.objects(uuid=args['uuid']).first()
-        user.access = args['access']
-        user.client = args['client']
-        user.server = args['server']
+        if 'access' in args:
+            user.access = args['access']
+        if 'client' in args:
+            user.client = args['client']
+        if 'server' in args:
+            user.server = args['server']
+        if 'login' in args:
+            user.login = args['login']
+        if 'email' in args:
+            user.email = args['email']
+        if 'password' in args:
+            user.password = bcrypt.hashpw(
+                args['password'].encode('utf8'), 
+                bcrypt.gensalt()
+            )
         user.save()
+
+        user.password = None
+        user.email = None
 
         return user.to_player_dict(), 200
