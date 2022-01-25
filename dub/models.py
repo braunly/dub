@@ -10,7 +10,7 @@ class User(Document):
     uuid = StringField(required=True, unique=True)
     login = StringField(required=True, unique=True)
     password = StringField(required=True)
-    email = StringField(default="example@example.com")
+    email = StringField(default="empty@example.com")
     access = StringField(null=True)
     client = StringField(null=True)
     server = StringField(null=True)
@@ -26,9 +26,9 @@ class User(Document):
 
     def to_player_dict(self):
         data = self.to_mongo().to_dict()
-        del data["_id"]
-        del data["created_at"]
-        del data["updated_at"]
+        if '_id' in data: del data["_id"]
+        if 'created_at' in data: del data["created_at"]
+        if 'updated_at' in data: del data["updated_at"]
 
         return data
 
