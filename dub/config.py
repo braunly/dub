@@ -6,8 +6,6 @@ if environ.bool("READ_ENV", True):
 
 # Flask core settings
 DEBUG = environ.bool("DEBUG", False)
-HOST = environ.str("HOST", "0.0.0.0")
-PORT = environ.int("PORT", 8080)
 
 # Authorization token
 AUTH_TOKEN = environ.str("AUTH_TOKEN", "ACCESS TOKEN")
