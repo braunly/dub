@@ -2,6 +2,7 @@ from flask import Flask, request
 from mongoengine import connect
 
 from dub.views.urls import blueprint
+from dub.resources import auth_server_blueprint, session_server_blueprint
 
 
 def init_auth(app):
@@ -31,6 +32,8 @@ def create_app(config_filename):
     # os.mkdir(app.config['MEDIA_ROOT'])
 
     app.register_blueprint(blueprint)
+    app.register_blueprint(auth_server_blueprint)
+    app.register_blueprint(session_server_blueprint)
 
     init_auth(app)
 
