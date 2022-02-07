@@ -6,6 +6,7 @@ root_blueprint = Blueprint(
     url_prefix='/'
 )
 
+
 @root_blueprint.route('/', methods=['GET'])
 def root():
     return {

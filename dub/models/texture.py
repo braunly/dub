@@ -3,6 +3,7 @@ from datetime import datetime
 from mongoengine import Document, StringField, BooleanField, DateTimeField
 from mongoengine.fields import DictField, IntField
 
+
 class Texture(Document):
     meta = {"indexes": ["kind", "deleted", "-created"]}
 

@@ -4,7 +4,7 @@ from mongoengine import connect
 from dub.resources import api_blueprint, auth_server_blueprint, root_blueprint, session_server_blueprint
 
 
-def init_auth(app):
+def init_api_auth(app):
     @api_blueprint.before_request
     def before_request():
         headers = request.headers
@@ -15,13 +15,16 @@ def init_auth(app):
         ):
             return
 
-        return "", 403 
+        return "", 403
+
 
 def create_app(config_filename):
     """Application factory."""
     app = Flask(__name__)
     app.config.from_object(config_filename)
     app.app_context().push()
+
+    init_api_auth(app)
     
     # Connect to mongo
     connect(host=app.config["DB_URL"])
@@ -33,7 +36,5 @@ def create_app(config_filename):
     app.register_blueprint(auth_server_blueprint)
     app.register_blueprint(root_blueprint)
     app.register_blueprint(session_server_blueprint)
-
-    init_auth(app)
 
     return app

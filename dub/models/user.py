@@ -23,12 +23,3 @@ class User(Document):
     def save(self, *args, **kwargs):
         self.updated_at = datetime.utcnow()
         return super().save(*args, **kwargs)
-
-    def to_player_dict(self):
-        data = self.to_mongo().to_dict()
-        if '_id' in data: del data["_id"]
-        if 'created_at' in data: del data["created_at"]
-        if 'updated_at' in data: del data["updated_at"]
-
-        return data
-
