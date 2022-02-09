@@ -1,6 +1,6 @@
 FROM python:3.9-slim-buster
 
-RUN apt-get update && apt-get install --no-install-recommends -y build-essential zlib1g-dev gcc && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -y build-essential libssl-dev zlib1g-dev gcc swig && rm -rf /var/lib/apt/lists/*
 
 ENV WORKERS 5
 ENV WORKER_THREADS 2
@@ -11,7 +11,7 @@ RUN pip install -r requirements/prod.txt
 COPY . /app
 
 CMD exec uwsgi \
-  --wsgi dub.wsgi:app \
+  --wsgi wsgi:app \
   --master \
   --socket 0.0.0.0:8080 \
   --processes $WORKERS \
