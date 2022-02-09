@@ -11,7 +11,7 @@ root_blueprint = Blueprint(
 def root():
     return {
             "meta": {
-                "serverName": current_app.config.get("SERVER_NAME", "Server name"),
+                "serverName": current_app.config.get("AUTH_SERVER_NAME", "Server name"),
                 "feature.non_email_login": True
             },
             "skinDomains": [

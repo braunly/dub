@@ -19,7 +19,7 @@ MEDIA_ROOT = environ.str("MEDIA_ROOT", "media/")
 DB_URL = environ.str("DB_URL", "mongodb://{user}:{password}@{host}:{port}/{db}")
 
 # Server name in main menu
-SERVER_NAME = environ.str("SERVER_NAME", "Server name")
+AUTH_SERVER_NAME = environ.str("AUTH_SERVER_NAME", "Server name")
 
 # Skins domain
 SKIN_DOMAIN = environ.str("SKIN_DOMAIN", ".example.com")
