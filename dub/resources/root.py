@@ -17,5 +17,5 @@ def root():
             "skinDomains": [
                 current_app.config.get("SKIN_DOMAIN", ".example.com")
             ],
-            "signaturePublickey": current_app.config.get("PUBLIC_RSA_KEY")
+            "signaturePublickey": current_app.config.get("PUBLIC_RSA_KEY").decode('utf-8')
         }
