@@ -34,10 +34,11 @@ def authenticate(
     if not password_check.status:
         return InvalidCredentials
 
-    if req.clientToken is not None and user.client != req.clientToken:
-        return InvalidClientToken
+    # Need to implement session reset command in bot
+    # if req.clientToken is not None and user.client is not None and user.client != req.clientToken:
+    #     return InvalidClientToken
 
-    user = user.copy(update=dict(access=uuid4()))
+    user = user.copy(update=dict(access=uuid4(), client=req.clientToken))
 
     if req.agent is not None:
         profile = auth.Profile(id=user.uuid, name=user.login)

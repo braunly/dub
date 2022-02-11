@@ -1,6 +1,6 @@
 from typing import Union
 
-from dub import models
+from dub.models import db
 from nidhoggr.core.response import ErrorResponse, TextureStatusResponse
 from nidhoggr.core.texture import TextureRequest, TextureUploadRequest, SimpleTextureResponse
 from nidhoggr.core.repository import BaseTextureRepo
@@ -10,9 +10,9 @@ class Textures(BaseTextureRepo):
     @staticmethod
     def get(*, request: TextureRequest) -> Union[ErrorResponse, SimpleTextureResponse]:
         textures_dict = {}
-        textures = models.Texture.objects(
+        textures = db.Texture.objects(
             token=str(request.uuid),
-            kind__in=[str(t) for t in request.texture_types],
+            kind__in=[t.value for t in request.texture_types],
             deleted=False
         ).order_by("-created").no_cache()
 

@@ -6,7 +6,7 @@ from nidhoggr.core.user import User as nidhoggr_user
 from werkzeug.security import generate_password_hash, safe_join
 
 from dub.db.users import Users
-from dub.models import User, Texture
+from dub.models.db import User, Texture
 from flask import Blueprint, request, current_app
 
 api_blueprint = Blueprint(
@@ -14,8 +14,6 @@ api_blueprint = Blueprint(
     __name__,
     url_prefix='/api'
 )
-
-
 
 
 @api_blueprint.route('/user/create/', methods=['POST'])
@@ -82,6 +80,8 @@ def texture_upload():
     data = request.json.get("data")
     metadata = request.json.get("metadata")
 
+    Texture.objects(token=uuid, deleted=False).update(deleted=True)
+
     texture = Texture(
         token=uuid,
         deleted=False,
@@ -97,3 +97,20 @@ def texture_upload():
     texture.save()
 
     return {"message": "Saved texture"}
+
+
+@api_blueprint.route('/texture/get/', methods=['POST'])
+def texture_get():
+    uuid = request.json.get("uuid")
+
+    textures = []
+    textures_qs = Texture.objects(token=uuid, deleted=False).all()
+
+    for texture in textures_qs:
+        textures.append(dict(
+            kind=texture.kind,
+            url=texture.image,
+            created=texture.created
+        ))
+
+    return {"textures": [textures]}

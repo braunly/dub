@@ -1,7 +1,7 @@
 from flask import Flask, request
 from mongoengine import connect
 
-from dub.resources import api_blueprint, auth_server_blueprint, root_blueprint, session_server_blueprint
+from dub.resources import *
 
 
 def init_api_auth(app):
@@ -36,5 +36,6 @@ def create_app(config_filename):
     app.register_blueprint(auth_server_blueprint)
     app.register_blueprint(root_blueprint)
     app.register_blueprint(session_server_blueprint)
+    app.register_blueprint(minecraft_services_blueprint)
 
     return app
