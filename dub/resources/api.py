@@ -1,5 +1,6 @@
 import os
 from base64 import b64decode
+from urllib.parse import urljoin
 from uuid import uuid4
 
 from nidhoggr.core.user import User as nidhoggr_user
@@ -89,7 +90,7 @@ def texture_upload():
         metadata=metadata
     )
     image_path = f'{uuid}/{uuid4()}.png'
-    texture.image = image_path
+    texture.image = urljoin(current_app.config.get('SKIN_BASE_URL'), image_path)
 
     with open(f'media/{image_path}', 'wb') as f:
         f.write(b64decode(data))
