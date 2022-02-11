@@ -63,6 +63,7 @@ class Users(BaseUserRepo):
             return ErrorResponse(reason="User not found!")
 
         db_user.access = str(user.access)
+        db_user.client = str(user.client)
         if user.server:
             db_user.server = user.server
         db_user.save()
