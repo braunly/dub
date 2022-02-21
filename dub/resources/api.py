@@ -126,7 +126,7 @@ def names_to_uuid():
     response_list = []
     for user in users.all():
         response_list.append({
-            'id': user.uuid,
+            'id': user.uuid.replace('-', ''),
             'name': user.login
         })
 
