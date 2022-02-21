@@ -118,16 +118,16 @@ def texture_get():
 
 
 @api_blueprint.route('/profiles/minecraft', methods=['POST'], endpoint="mojang_api_profiles")
-def names_to_uuid():
-    names = request.json
+def name_to_uuid():
+    name = request.json[0]
 
-    users = User.objects(login__in=names).only("uuid", "login").no_cache()
+    user = User.objects(login__iexact=name).only("uuid", "login").first()
 
     response_list = []
-    for user in users.all():
+    if user:
         response_list.append({
             'id': user.uuid.replace('-', ''),
             'name': user.login
-        })
+        }) 
 
     return Response(json.dumps(response_list),  mimetype='application/json')
