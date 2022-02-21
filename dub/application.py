@@ -9,9 +9,9 @@ def init_api_auth(app):
     def before_request():
         headers = request.headers
         if (
-            "Authorization" in headers
-            and headers["Authorization"] == f'Bearer {app.config["AUTH_TOKEN"]}'
-            or request.endpoint is None
+                ("Authorization" in headers
+                 and headers["Authorization"] == f'Bearer {app.config["AUTH_TOKEN"]}')
+                or request.endpoint.startswith("api.mojang_api")
         ):
             return
 

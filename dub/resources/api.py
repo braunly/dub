@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, safe_join
 
 from dub.db.users import Users
 from dub.models.db import User, Texture
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request, current_app, Response, json
 
 api_blueprint = Blueprint(
     'api',
@@ -115,3 +115,19 @@ def texture_get():
         ))
 
     return {"textures": [textures]}
+
+
+@api_blueprint.route('/profiles/minecraft', methods=['POST'], endpoint="mojang_api_profiles")
+def names_to_uuid():
+    names = request.json
+
+    users = User.objects(login__in=names).only("uuid", "login").no_cache()
+
+    response_list = []
+    for user in users.all():
+        response_list.append({
+            'id': user.uuid,
+            'name': user.login
+        })
+
+    return Response(json.dumps(response_list),  mimetype='application/json')
