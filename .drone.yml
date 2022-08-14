@@ -1,0 +1,37 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: build dub docker image
+  image: docker:dind
+  volumes:
+  - name: dockersock
+    path: /var/run
+  commands:
+  - docker build -t dub:latest -f Dockerfile .
+
+- name: redeploy container
+  image: docker:dind
+  volumes:
+    - name: dockersock
+      path: /var/run
+    - name: data
+      path: /data
+  commands:
+    - docker stop dub
+    - docker rm dub
+    - docker run -d --name dub --env-file /data/envs/dub.env --restart always -v /data/dub/skins:/app/media -p 172.17.0.1:9010:8080 dub:latest
+
+volumes:
+- name: dockersock
+  host:
+    path: /var/run
+- name: data
+  host:
+    path: /data
+
+trigger:
+  branch:
+  - master
