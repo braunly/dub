@@ -4,3 +4,4 @@ mongoengine==0.23.1
 requests==2.27.1
 environs==9.5.0
 nidhoggr
+cryptography==37.0.4
