@@ -92,41 +92,51 @@ def player_certificates():
         key_size=2048
     )
     private_pem = private_key.private_bytes(
-        encoding=crypto_serialization.Encoding.PEM,
-        format=crypto_serialization.PrivateFormat.TraditionalOpenSSL,
+        encoding=crypto_serialization.Encoding.DER,
+        format=crypto_serialization.PrivateFormat.PKCS8,
         encryption_algorithm=crypto_serialization.NoEncryption()
     )
+
     public_key = private_key.public_key()
     public_pem = public_key.public_bytes(
-        encoding=crypto_serialization.Encoding.PEM,
-        format=crypto_serialization.PublicFormat.PKCS1
+        encoding=crypto_serialization.Encoding.DER,
+        format=crypto_serialization.PublicFormat.SubjectPublicKeyInfo
     )
 
-    message = b"meow"  # FIXME: ???
+    private_key_str = "-----BEGIN RSA PRIVATE KEY-----" + \
+                      base64.encodebytes(private_pem).decode('utf-8') + \
+                      "-----END RSA PRIVATE KEY-----"
+
+    public_key_str = "-----BEGIN RSA PUBLIC KEY-----" + \
+                     base64.encodebytes(public_pem).decode('utf-8') + \
+                     "-----END RSA PUBLIC KEY-----"
+
+    message = b"meow"  # FIXME: UUID ???
     signature = private_key.sign(
         message,
         padding.PKCS1v15(),
-        hashes.SHA256()
+        hashes.SHA1()
     )
     base64_bytes = base64.b64encode(signature)
 
     signature_v2 = private_key.sign(
         message,
         padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
+            mgf=padding.MGF1(hashes.SHA1()),
             salt_length=padding.PSS.MAX_LENGTH
         ),
-        hashes.SHA256()
+        hashes.SHA1()
     )
     base64_bytes_v2 = base64.b64encode(signature_v2)
 
-    expires_at = datetime.now() + timedelta(hours=48)
-    refreshed_after = datetime.now() + timedelta(hours=40)
+    expires_at = datetime.now() + timedelta(days=8)
+    refreshed_after = datetime.now() + timedelta(days=7)
+
 
     return {
       "keyPair": {
-        "privateKey": private_pem.decode('utf-8'),
-        "publicKey": public_pem.decode('utf-8')
+        "privateKey": private_key_str,
+        "publicKey": public_key_str
       },
       "publicKeySignature": base64_bytes.decode('utf-8'),
       "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
