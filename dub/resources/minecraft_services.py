@@ -99,7 +99,7 @@ def player_certificates():
     public_key = private_key.public_key()
     public_pem = public_key.public_bytes(
         encoding=crypto_serialization.Encoding.PEM,
-        format=crypto_serialization.PublicFormat.SubjectPublicKeyInfo
+        format=crypto_serialization.PublicFormat.PKCS1
     )
 
     message = b"meow"  # FIXME: ???
