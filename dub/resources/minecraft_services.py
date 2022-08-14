@@ -101,6 +101,7 @@ def player_certificates():
         encoding=crypto_serialization.Encoding.PEM,
         format=crypto_serialization.PublicFormat.SubjectPublicKeyInfo
     )
+
     message = b"meow"  # FIXME: ???
     signature = private_key.sign(
         message,
@@ -108,7 +109,6 @@ def player_certificates():
         hashes.SHA256()
     )
     base64_bytes = base64.b64encode(signature)
-    base64_signature = base64_bytes.decode('utf-8')
 
     signature_v2 = private_key.sign(
         message,
@@ -118,20 +118,18 @@ def player_certificates():
         ),
         hashes.SHA256()
     )
-
     base64_bytes_v2 = base64.b64encode(signature_v2)
-    base64_signature_v2 = base64_bytes_v2.decode('utf-8')
 
     expires_at = datetime.now() + timedelta(hours=48)
     refreshed_after = datetime.now() + timedelta(hours=40)
 
     return {
       "keyPair": {
-        "privateKey": private_pem,
-        "publicKey": public_pem
+        "privateKey": private_pem.decode('utf-8'),
+        "publicKey": public_pem.decode('utf-8')
       },
-      "publicKeySignature": base64_signature,
-      "publicKeySignatureV2": base64_signature_v2,
+      "publicKeySignature": base64_bytes.decode('utf-8'),
+      "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
       "expiresAt": expires_at.isoformat(),
       "refreshedAfter": refreshed_after.isoformat()
     }
