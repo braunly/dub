@@ -130,6 +130,6 @@ def player_certificates():
       },
       "publicKeySignature": base64_bytes.decode('utf-8'),
       "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
-      "expiresAt": expires_at.isoformat(),
-      "refreshedAfter": refreshed_after.isoformat()
+      "expiresAt": expires_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
+      "refreshedAfter": refreshed_after.strftime('%Y-%m-%dT%H:%M:%SZ')
     }
