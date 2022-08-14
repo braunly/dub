@@ -11,8 +11,10 @@ RUN pip install -r requirements/prod.txt
 COPY . /app
 
 CMD exec uwsgi \
+  --hook-master-start "unix_signal:15 gracefully_kill_them_all" \
   --wsgi wsgi:app \
   --master \
+  --die-on-term \
   --socket 0.0.0.0:8080 \
   --processes $WORKERS \
   --threads $WORKER_THREADS \
