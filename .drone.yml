@@ -20,8 +20,8 @@ steps:
     - name: data
       path: /data
   commands:
-    - docker stop dub
-    - docker rm dub
+    - docker stop dub || true
+    - docker rm dub || true
     - docker run -d --name dub --env-file /data/envs/dub.env --restart always -v /data/dub/skins:/app/media -p 172.17.0.1:9010:8080 dub:latest
 
 volumes:
