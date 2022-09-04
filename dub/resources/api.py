@@ -131,3 +131,11 @@ def name_to_uuid():
         }) 
 
     return Response(json.dumps(response_list),  mimetype='application/json')
+
+
+@api_blueprint.route('/shiningarmor', methods=['POST'], endpoint="shiningarmor")
+def receive_deleted():
+    sender = request.json.get["sender"]
+    deleted_files = request.json.get["names"]
+
+    current_app.logger.info(f"[ShiningArmor] Player {sender} had unexpected mods: {deleted_files}")

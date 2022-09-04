@@ -1,4 +1,5 @@
 from flask import Flask, request
+from logging.config import dictConfig
 from mongoengine import connect
 
 from dub.resources import *
@@ -20,6 +21,23 @@ def init_api_auth(app):
 
 def create_app(config_filename):
     """Application factory."""
+
+    dictConfig({
+        'version': 1,
+        'formatters': {'default': {
+            'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        }},
+        'handlers': {'wsgi': {
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://flask.logging.wsgi_errors_stream',
+            'formatter': 'default'
+        }},
+        'root': {
+            'level': 'INFO',
+            'handlers': ['wsgi']
+        }
+    })
+
     app = Flask(__name__)
     app.config.from_object(config_filename)
     app.app_context().push()
