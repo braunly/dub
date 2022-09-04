@@ -13,6 +13,7 @@ def init_api_auth(app):
                 ("Authorization" in headers
                  and headers["Authorization"] == f'Bearer {app.config["AUTH_TOKEN"]}')
                 or request.endpoint.startswith("api.mojang_api")
+                or request.endpoint.startswith("api.sa_launcher")
         ):
             return
 
