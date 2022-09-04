@@ -139,3 +139,5 @@ def receive_deleted():
     deleted_files = request.json.get("names")
 
     current_app.logger.info(f"[ShiningArmor] Player {sender} had unexpected mods: {deleted_files}")
+
+    return {'status': 'OK'}, 200
