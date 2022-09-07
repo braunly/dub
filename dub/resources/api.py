@@ -10,6 +10,8 @@ from dub.db.users import Users
 from dub.models.db import User, Texture
 from flask import Blueprint, request, current_app, Response, json
 
+from dub.utils.telegram import send_msg
+
 api_blueprint = Blueprint(
     'api',
     __name__,
@@ -139,5 +141,7 @@ def receive_deleted():
     deleted_files = request.json.get("names")
 
     current_app.logger.info(f"[ShiningArmor] Player {sender} had unexpected mods: {deleted_files}")
+
+    send_msg(f"Player {sender} had unexpected mods: {deleted_files}")
 
     return {'status': 'OK'}, 200

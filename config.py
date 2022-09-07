@@ -28,3 +28,7 @@ SKIN_BASE_URL = environ.str("SKIN_BASE_URL", "https://skin.example.com/skins/Min
 # RSA keys
 PRIVATE_RSA_KEY = b64decode(environ.str('PRIVATE_RSA_KEY'))
 PUBLIC_RSA_KEY = b64decode(environ.str('PUBLIC_RSA_KEY'))
+
+# Alerts bot
+ALERTS_BOT_TOKEN = environ.str("ALERTS_BOT_TOKEN", "")
+ALERTS_BOT_CHATID = environ.str("ALERTS_BOT_CHATID", "")
