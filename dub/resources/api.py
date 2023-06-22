@@ -91,6 +91,12 @@ def texture_upload():
         kind=kind,
         metadata=metadata
     )
+
+    try:
+        os.makedirs(f'media/{uuid}/')
+    except FileExistsError:
+        pass
+
     image_path = f'{uuid}/{uuid4()}.png'
     texture.image = urljoin(current_app.config.get('SKIN_BASE_URL'), image_path)
 

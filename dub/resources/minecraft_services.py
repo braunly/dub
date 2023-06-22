@@ -150,7 +150,7 @@ def public_keys():
     keys = list()
 
     keys.append({
-        "publicKey": base64.b64encode(current_app.config.get("PUBLIC_RSA_KEY"))
+        "publicKey": base64.b64encode(current_app.config.get("PUBLIC_RSA_KEY")).decode("utf-8")
     })
 
     return {
