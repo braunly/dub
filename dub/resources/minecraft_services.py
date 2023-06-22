@@ -156,7 +156,7 @@ def public_keys():
     player_public_key = generate_player_certificates()['keyPair']['publicKey']
 
     keys.append({
-        "publicKey": base64.b64encode(player_public_key).decode("utf-8")
+        "publicKey": base64.b64encode(player_public_key.encode('utf-8')).decode("utf-8")
     })
 
     return {
