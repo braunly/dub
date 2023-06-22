@@ -13,7 +13,9 @@ def root():
             "meta": {
                 "serverName": current_app.config.get("AUTH_SERVER_NAME", "Server name"),
                 "feature.non_email_login": True,
-                "feature.enable_profile_key": True
+                "feature.enable_profile_key": True,
+                "feature.no_mojang_namespace": True,
+                "feature.enable_mojang_anti_features": False
             },
             "skinDomains": [
                 current_app.config.get("SKIN_DOMAIN", ".example.com")

@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 from dub.db.textures import Textures
 from dub.models.http.minecraft_services import Skin, Cape
@@ -142,4 +142,18 @@ def player_certificates():
       "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
       "expiresAt": expires_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
       "refreshedAfter": refreshed_after.strftime('%Y-%m-%dT%H:%M:%SZ')
+    }
+
+
+@minecraft_services_blueprint.route('/publickeys', methods=['GET'])
+def public_keys():
+    keys = list()
+
+    keys.append({
+        "publicKey": current_app.config.get("PUBLIC_RSA_KEY").decode('utf-8')
+    })
+
+    return {
+        "profilePropertyKeys": keys,
+        "playerCertificateKeys": keys
     }
