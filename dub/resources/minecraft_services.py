@@ -83,9 +83,7 @@ def player_attributes():
     }
 
 
-@minecraft_services_blueprint.route('/player/certificates', methods=['POST'])
-def player_certificates():
-    # FIXME!!!: implement player certificates
+def generate_player_certificates():
     private_key = rsa.generate_private_key(
         backend=crypto_default_backend(),
         public_exponent=65537,
@@ -132,25 +130,33 @@ def player_certificates():
     expires_at = datetime.now() + timedelta(days=8)
     refreshed_after = datetime.now() + timedelta(days=7)
 
-
     return {
-      "keyPair": {
-        "privateKey": private_key_str,
-        "publicKey": public_key_str
-      },
-      "publicKeySignature": base64_bytes.decode('utf-8'),
-      "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
-      "expiresAt": expires_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
-      "refreshedAfter": refreshed_after.strftime('%Y-%m-%dT%H:%M:%SZ')
+        "keyPair": {
+            "privateKey": private_key_str,
+            "publicKey": public_key_str
+        },
+        "publicKeySignature": base64_bytes.decode('utf-8'),
+        "publicKeySignatureV2": base64_bytes_v2.decode('utf-8'),
+        "expiresAt": expires_at.strftime('%Y-%m-%dT%H:%M:%SZ'),
+        "refreshedAfter": refreshed_after.strftime('%Y-%m-%dT%H:%M:%SZ')
     }
+
+
+@minecraft_services_blueprint.route('/player/certificates', methods=['POST'])
+def player_certificates():
+    # FIXME!!!: implement player certificates
+
+    return generate_player_certificates()
 
 
 @minecraft_services_blueprint.route('/publickeys', methods=['GET'])
 def public_keys():
     keys = list()
 
+    player_public_key = generate_player_certificates()['keyPair']['publicKey']
+
     keys.append({
-        "publicKey": base64.b64encode(current_app.config.get("PUBLIC_RSA_KEY")).decode("utf-8")
+        "publicKey": base64.b64encode(player_public_key).decode("utf-8")
     })
 
     return {
